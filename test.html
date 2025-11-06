@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIZKLUB Instructors Helpline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fefefe 0%, #f8f6f0 50%, #f5f2e8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8B5CF6, #7C3AED, #6D28D9);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            border-radius: 20px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        h1 {
+            color: #1F2937;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6B7280;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 15px;
+        }
+
+        .required::after {
+            content: " *";
+            color: #EF4444;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            background: white;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #8B5CF6, #7C3AED) border-box;
+            border: 2px solid transparent;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .radio-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            margin-bottom: 0;
+        }
+
+        .radio-group label:hover {
+            border-color: #8B5CF6;
+            background: #FAF5FF;
+        }
+
+        .radio-group input[type="radio"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            accent-color: #8B5CF6;
+        }
+
+        .file-upload {
+            border: 2px dashed #E5E7EB;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: #FAFBFC;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: #8B5CF6;
+            background: #FAF5FF;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            color: #8B5CF6;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .file-upload-subtext {
+            color: #9CA3AF;
+            font-size: 12px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Popup Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .popup {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            animation: slideUp 0.4s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .popup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10B981, #34D399);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .popup h2 {
+            color: #065F46;
+            margin-bottom: 15px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .popup p {
+            margin-bottom: 25px;
+            color: #374151;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .popup-btn {
+            background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .form-group:focus-within label {
+            color: #7C3AED;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            margin-top: 10px;
+            padding: 10px;
+            background: #F3F4F6;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #374151;
+            word-break: break-all;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+            }
+            
+            .logo {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            
+            .file-upload {
+                padding: 20px;
+            }
+            
+            .file-upload-icon {
+                font-size: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 25px 15px;
+                border-radius: 16px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                border-radius: 16px;
+            }
+            
+            input[type="text"],
+            select {
+                padding: 14px 16px;
+                font-size: 14px;
+            }
+            
+            .radio-group label {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+            
+            .file-upload {
+                padding: 15px;
+            }
+            
+            .file-upload-icon {
+                font-size: 36px;
+            }
+            
+            .file-upload-text {
+                font-size: 13px;
+            }
+            
+            .file-upload-subtext {
+                font-size: 11px;
+            }
+            
+            .submit-btn {
+                padding: 16px;
+                font-size: 15px;
+            }
+            
+            .popup {
+                padding: 30px 20px;
+            }
+            
+            .popup h2 {
+                font-size: 24px;
+            }
+            
+            .success-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                border-radius: 12px;
+            }
+            
+            .header {
+                margin-bottom: 30px;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .radio-group label {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            
+            .radio-group input[type="radio"] {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔧</div>
+            <h1>WIZKLUB INSTRUCTORS HELPLINE</h1>
+            <p class="subtitle">Get technical support for your teaching needs</p>
+        </div>
+        
+        <form id="googleForm">
+            <!-- EMPID -->
+            <div class="form-group">
+                <label for="empid" class="required">EMPID (Ex: EMP737)</label>
+                <input type="text" 
+                       id="empid" 
+                       name="entry.539082508" 
+                       required 
+                       placeholder="Enter your Employee ID">
+            </div>
+
+            <!-- Name -->
+            <div class="form-group">
+                <label for="name" class="required">Name</label>
+                <input type="text" 
+                       id="name" 
+                       name="entry.415672604" 
+                       required 
+                       placeholder="Enter your full name">
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+                <label class="required">Category</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="entry.1650628212" value="Platform" required>
+                        🖥️ Platform
+                    </label>
+                    <label>
+                        <input type="radio" name="entry.1650628212" value="Infrastructure" required>
+                        🏢 Infrastructure
+                    </label>
+                    <label>
+                        <input type="radio" name="entry.1650628212" value="Hardware" required>
+                        💻 Hardware
+                    </label>
+                    <label>
+                        <input type="radio" name="entry.1650628212" value="Curriculum" required>
+                        📚 Curriculum
+                    </label>
+                    <label>
+                        <input type="radio" name="entry.1650628212" value="Content Delivery" required>
+                        🎯 Content Delivery
+                    </label>
+                </div>
+            </div>
+
+            <!-- Issue -->
+            <div class="form-group">
+                <label for="issue" class="required">Issue Type</label>
+                <select id="issue" name="entry.1964477240" required>
+                    <option value="">Select the issue type</option>
+                    <option value="Platform not working">🚨 Platform not working</option>
+                    <option value="User Management - Platform">👥 User Management - Platform</option>
+                    <option value="Missed Class / Rescheduling Sessions - Platform">📅 Missed Class / Rescheduling - Platform</option>
+                    <option value="Resetting the Student password - Platform">🔐 Password Reset - Platform</option>
+                    <option value="Batch enrollment of additional students post batch creation -Platform">👨‍🎓 Batch Enrollment - Platform</option>
+                    <option value="Enhancements - Platform">✨ Enhancements - Platform</option>
+                    <option value="Configuration Issue - Hardware">⚙️ Configuration - Hardware</option>
+                    <option value="Troubleshooting Hardware - Hardware">🔧 Troubleshooting - Hardware</option>
+                    <option value="Loss of Hardware - Hardware">❌ Loss of Hardware</option>
+                    <option value="WiFi / Router is not working - Infrastructure">📶 WiFi/Router Issue - Infrastructure</option>
+                    <option value="ISP Down - Infrastructure">🌐 ISP Down - Infrastructure</option>
+                    <option value="Frequent Power Shutdown - Infrastructure">⚡ Power Issues - Infrastructure</option>
+                    <option value="System not working - Infrastructure">💻 System Not Working - Infrastructure</option>
+                    <option value="Electrical Ports & Wiring - Infrastructure">🔌 Electrical Issues - Infrastructure</option>
+                    <option value="Projector unavailability Issue - Infrastructure">📽️ Projector Issue - Infrastructure</option>
+                    <option value="Shared Lab - Infrastructure">🏫 Shared Lab - Infrastructure</option>
+                    <option value="Lab Assigned for other purpose - Infrastructure">⏰ Lab Scheduling - Infrastructure</option>
+                    <option value="During Exams - Infrastructure">📝 Exam Period - Infrastructure</option>
+                    <option value="Computer Peripheral not working - Infrastructure">🖱️ Peripheral Issues - Infrastructure</option>
+                    <option value="CPU Load Issue - Infrastructure">🔥 CPU Load - Infrastructure</option>
+                    <option value="Guide & Session mismatch - Curriculum">📖 Content Mismatch - Curriculum</option>
+                    <option value="Assessment Parameters & timeline - Curriculum">⏱️ Assessment Issues - Curriculum</option>
+                    <option value="Session Topic Correction - Curriculum">✏️ Content Correction - Curriculum</option>
+                    <option value="Duration of Session - Curriculum">🕒 Session Duration - Curriculum</option>
+                    <option value="Assessment questions not relevant - Curriculum">❓ Assessment Quality - Curriculum</option>
+                    <option value="Topic Retraining - Content Delivery">🔄 Retraining Needed - Content Delivery</option>
+                </select>
+            </div>
+
+            <!-- Priority -->
+            <div class="form-group">
+                <label for="priority" class="required">Priority Level</label>
+                <select id="priority" name="entry.2110805653" required>
+                    <option value="">Select urgency level</option>
+                    <option value="High">🚨 High - Critical issue affecting classes</option>
+                    <option value="Medium">⚠️ Medium - Important but not urgent</option>
+                    <option value="Low">📋 Low - General inquiry or enhancement</option>
+                </select>
+            </div>
+
+            <!-- Screenshot -->
+            <div class="form-group">
+                <label for="screenshot">SCREENSHOT (Optional)</label>
+                <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                    <div class="file-upload-icon">📎</div>
+                    <div class="file-upload-text">Click to upload screenshot</div>
+                    <div class="file-upload-subtext">Supports: JPG, PNG, PDF (Max: 10MB)</div>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".jpg,.jpeg,.png,.pdf">
+                <div id="selectedFile" class="selected-file" style="display: none;"></div>
+            </div>
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="fvv" value="1">
+            <input type="hidden" name="pageHistory" value="0">
+            <input type="hidden" name="fbzx" value="3629172185129253646">
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">
+                Submit Support Request
+            </button>
+        </form>
+    </div>
+
+    <!-- Success Popup -->
+    <div class="popup-overlay" id="successPopup">
+        <div class="popup">
+            <div class="success-icon">✓</div>
+            <h2>Request Submitted!</h2>
+            <p>Your support request has been recorded and will be addressed by our technical team.</p>
+            <p><small>You'll receive updates via email.</small></p>
+            <button class="popup-btn" onclick="closePopup()">Got It</button>
+        </div>
+    </div>
+
+    <!-- Hidden iframe for form submission -->
+    <iframe name="hiddenFrame" style="display: none;"></iframe>
+
+    <script>
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const selectedFileDiv = document.getElementById('selectedFile');
+            
+            if (file) {
+                selectedFileDiv.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                selectedFileDiv.style.display = 'block';
+            } else {
+                selectedFileDiv.style.display = 'none';
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('googleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            if (!validateForm()) {
+                showTemporaryError('Please fill all required fields!');
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+            document.getElementById('googleForm').classList.add('loading');
+            
+            // Create a temporary form for submission to Google
+            const tempForm = document.createElement('form');
+            tempForm.method = 'POST';
+            tempForm.action = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSd4uLHDE4qP9BTAorYPVLPMGc-e-hhNeeM35Q4SF0ZzPQkKXg/formResponse';
+            tempForm.target = 'hiddenFrame';
+            tempForm.style.display = 'none';
+            
+            // Get all form data
+            const formData = new FormData(this);
+            
+            // Add all form fields to temporary form
+            for (let [name, value] of formData) {
+                if (name !== 'fileInput') { // Skip file input for now
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = value;
+                    tempForm.appendChild(input);
+                }
+            }
+            
+            // Add submission timestamp
+            const timestampInput = document.createElement('input');
+            timestampInput.type = 'hidden';
+            timestampInput.name = 'submissionTimestamp';
+            timestampInput.value = new Date().getTime();
+            tempForm.appendChild(timestampInput);
+            
+            // Submit the form
+            document.body.appendChild(tempForm);
+            tempForm.submit();
+            
+            // Show success message after a short delay
+            setTimeout(() => {
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                document.getElementById('googleForm').classList.remove('loading');
+                
+                // Show success popup
+                showPopup();
+                
+                // Remove temporary form
+                document.body.removeChild(tempForm);
+                
+            }, 1000);
+        });
+
+        // Form validation
+        function validateForm() {
+            const empid = document.getElementById('empid').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const category = document.querySelector('input[name="entry.1650628212"]:checked');
+            const issue = document.getElementById('issue').value;
+            const priority = document.getElementById('priority').value;
+            
+            if (!empid || !name || !category || !issue || !priority) {
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Show temporary error
+        function showTemporaryError(message) {
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = message;
+            submitBtn.style.background = 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)';
+            
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.style.background = 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
+            }, 2000);
+        }
+
+        // Show success popup
+        function showPopup() {
+            document.getElementById('successPopup').style.display = 'flex';
+        }
+
+        // Close popup and clear form
+        function closePopup() {
+            document.getElementById('successPopup').style.display = 'none';
+            document.getElementById('googleForm').reset();
+            document.getElementById('selectedFile').style.display = 'none';
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('successPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+
+        // Close popup with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePopup();
+            }
+        });
+
+        // Real-time validation styling
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('blur', function() {
+                if (this.hasAttribute('required') && !this.value.trim()) {
+                    this.style.borderColor = '#EF4444';
+                    this.style.background = '#FEF2F2';
+                } else {
+                    this.style.borderColor = '#E5E7EB';
+                    this.style.background = 'white';
+                }
+            });
+            
+            element.addEventListener('focus', function() {
+                this.style.borderColor = '#8B5CF6';
+                this.style.background = 'white';
+            });
+        });
+
+        // Radio button validation styling
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.radio-group label').forEach(label => {
+                    label.style.borderColor = '#E5E7EB';
+                    label.style.background = 'white';
+                });
+                
+                if (this.checked) {
+                    this.closest('label').style.borderColor = '#8B5CF6';
+                    this.closest('label').style.background = '#FAF5FF';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
