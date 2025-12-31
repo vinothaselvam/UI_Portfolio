@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelForest OS - Ultimate Ecosystem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        body { font-family: 'Google Sans', sans-serif; background-color: #0c0d0e; overflow: hidden; transition: background 1s ease; }
+        .pixel-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; color: white; }
+        .light-mode { background-color: #e2e8f0; }
+        .light-mode .pixel-panel { background: rgba(255, 255, 255, 0.85); color: #0f172a; border: 1px solid rgba(0,0,0,0.05); }
+        .chip { background: rgba(255,255,255,0.08); padding: 8px 18px; border-radius: 14px; font-size: 13px; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .chip:hover { background: rgba(255,255,255,0.15); }
+        .chip-active { background: #10b981 !important; color: white !important; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        input[type=range] { -webkit-appearance: none; background: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #10b981; border: 3px solid white; cursor: pointer; }
+    </style>
+</head>
+<body id="body">
+
+    <div class="fixed inset-0 pointer-events-none flex flex-col justify-between p-8 z-10">
+        <div class="flex justify-between items-start pointer-events-auto">
+            <div class="flex flex-col gap-4">
+                <div class="pixel-panel px-6 py-4 flex gap-5 items-center shadow-2xl">
+                    <button onclick="toggleDayNight()" id="dayBtn" class="font-bold hover:scale-105 transition-all">🌙 Night</button>
+                    <div class="w-px h-5 bg-white/20"></div>
+                    <button onclick="toggleRain()" id="rainBtn" class="font-bold hover:scale-105 transition-all">🌧️ Rain</button>
+                </div>
+                <div class="pixel-panel px-5 py-3 flex gap-2 items-center">
+                    <div onclick="setSeason('spring')" class="chip" id="s-spring">🌸 Spring</div>
+                    <div onclick="setSeason('summer')" class="chip chip-active" id="s-summer">☀️ Summer</div>
+                    <div onclick="setSeason('autumn')" class="chip" id="s-autumn">🍂 Autumn</div>
+                    <div onclick="setSeason('winter')" class="chip" id="s-winter">❄️ Winter</div>
+                </div>
+            </div>
+            <div class="pixel-panel px-6 py-3 font-bold tracking-tight">WIZKLUB <span class="text-emerald-400">Atmospheric Engine</span></div>
+        </div>
+
+        <div class="pixel-panel p-10 max-w-3xl mx-auto w-full pointer-events-auto shadow-2xl mb-4">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-xs font-black opacity-50 uppercase tracking-[0.2em]">Atmospheric Engine</h2>
+                    <div class="text-6xl font-bold mt-2 tracking-tighter"><span id="treeCountLabel">1</span> <span class="text-xl font-medium opacity-40">Trees</span></div>
+                </div>
+                <div class="text-right">
+                    <div class="text-[10px] font-bold opacity-40 mb-1">HEALTH INDEX</div>
+                    <div id="healthVal" class="text-2xl font-mono text-emerald-400 font-bold">100%</div>
+                </div>
+            </div>
+            
+            <input type="range" id="treeSlider" min="1" max="60" value="1" class="w-full mb-8">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white/5 p-4 rounded-3xl border border-white/5">
+                    <div class="text-[10px] opacity-40 mb-1 font-bold uppercase">Carbon ($CO_2$)</div>
+                    <div id="co2Val" class="text-xl font-bold">22kg</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-3xl border border-white/5">
+                    <div class="text-[10px] opacity-40 mb-1 font-bold uppercase">Oxygen ($O_2$)</div>
+                    <div id="o2Val" class="text-xl font-bold">118kg</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-3xl border border-white/5">
+                    <div class="text-[10px] opacity-40 mb-1 font-bold uppercase">Hydrogen ($H$)</div>
+                    <div id="hVal" class="text-xl font-bold">5kg</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-3xl border border-white/5">
+                    <div class="text-[10px] opacity-40 mb-1 font-bold uppercase">Water ($H_2O$)</div>
+                    <div id="h2oVal" class="text-xl font-bold">150L</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /** ENGINE SETUP **/
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0c0d0e, 0.02);
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.4;
+        controls.maxPolarAngle = Math.PI / 2.1;
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        sunLight.position.set(15, 25, 10);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.set(2048, 2048);
+        scene.add(sunLight, new THREE.AmbientLight(0xffffff, 0.4));
+
+        const world = new THREE.Group();
+        const landGroup = new THREE.Group();
+        const treeGroup = new THREE.Group();
+        const birdGroup = new THREE.Group();
+        const animalGroup = new THREE.Group();
+        scene.add(world, birdGroup, animalGroup);
+        world.add(landGroup, treeGroup);
+
+        const seasonColors = {
+            spring: { land: 0x567d46, leaf: 0xffb7c5 },
+            summer: { land: 0x3d5a32, leaf: 0x2d4c1e },
+            autumn: { land: 0x7a5c37, leaf: 0xbf5b28 },
+            winter: { land: 0xe2e8f0, leaf: 0x94a3b8 }
+        };
+
+        /** RAIN SYSTEM **/
+        let isRaining = false;
+        const rainCount = 2000;
+        const rainGeo = new THREE.BufferGeometry();
+        const rainPos = new Float32Array(rainCount * 3);
+        for(let i=0; i<rainCount*3; i++) rainPos[i] = (Math.random()-0.5)*25;
+        rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+        const rainMat = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.08, transparent: true, opacity: 0.6 });
+        const rainParticles = new THREE.Points(rainGeo, rainMat);
+        rainParticles.visible = false;
+        scene.add(rainParticles);
+
+        /** ASSET BUILDERS **/
+        function createTerrain() {
+            const geo = new THREE.BoxGeometry(1, 1, 1);
+            for (let x = -8; x < 8; x++) {
+                for (let z = -8; z < 8; z++) {
+                    const h = 1.5 + Math.sin(x * 0.3) * 0.4 + Math.random() * 0.3;
+                    const mat = new THREE.MeshLambertMaterial({ color: seasonColors.summer.land });
+                    const block = new THREE.Mesh(geo, mat);
+                    block.position.set(x, h/2 - 1, z);
+                    block.scale.set(0.98, h, 0.98);
+                    block.userData.surfaceY = h - 1;
+                    block.receiveShadow = true;
+                    landGroup.add(block);
+                }
+            }
+        }
+
+        function createRealTree() {
+            const tree = new THREE.Group();
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.15, 1, 6), new THREE.MeshLambertMaterial({color: 0x4a3728}));
+            trunk.position.y = 0.5;
+            trunk.castShadow = true;
+
+            const leafGroup = new THREE.Group();
+            const leafMat = new THREE.MeshLambertMaterial({ color: seasonColors[currentSeason].leaf });
+            for(let i=0; i<3; i++) {
+                const cone = new THREE.Mesh(new THREE.ConeGeometry(0.55 - (i*0.12), 0.7, 8), leafMat);
+                cone.position.y = 0.7 + (i * 0.35);
+                cone.castShadow = true;
+                leafGroup.add(cone);
+            }
+            tree.add(trunk, leafGroup);
+            tree.scale.set(0,0,0);
+            tree.userData.windPhase = Math.random() * 5;
+            return tree;
+        }
+
+        function createBird() {
+            const bird = new THREE.Group();
+            const wing = new THREE.Mesh(new THREE.PlaneGeometry(0.35, 0.1), new THREE.MeshBasicMaterial({color:0x000000, side:2}));
+            wing.rotation.x = Math.PI/2;
+            bird.add(wing);
+            bird.position.set((Math.random()-0.5)*15, 4+Math.random()*3, (Math.random()-0.5)*15);
+            birdGroup.add(bird);
+        }
+
+        function createAnimal() {
+            const animal = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.2, 0.18), new THREE.MeshLambertMaterial({color: 0x8b5a2b}));
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.12), new THREE.MeshLambertMaterial({color: 0x8b5a2b}));
+            head.position.set(0.18, 0.15, 0);
+            animal.add(body, head);
+            const b = landGroup.children[Math.floor(Math.random()*landGroup.children.length)];
+            animal.position.set(b.position.x, b.userData.surfaceY + 0.1, b.position.z);
+            animal.userData.targetPos = animal.position.clone();
+            animalGroup.add(animal);
+        }
+
+        /** LOGIC **/
+        let isNight = true;
+        let currentSeason = 'summer';
+
+        function setSeason(s) {
+            currentSeason = s;
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('chip-active'));
+            document.getElementById('s-'+s).classList.add('chip-active');
+            landGroup.children.forEach(b => gsap.to(b.material.color, { ...new THREE.Color(seasonColors[s].land), duration: 1.2 }));
+            treeGroup.children.forEach(t => t.children[1].children.forEach(l => gsap.to(l.material.color, { ...new THREE.Color(seasonColors[s].leaf), duration: 1.2 })));
+            gsap.to(scene.fog.color, { ...new THREE.Color(isNight ? 0x0c0d0e : (s === 'winter' ? 0xffffff : 0xe2e8f0)), duration: 1.5 });
+        }
+
+        function toggleDayNight() {
+            isNight = !isNight;
+            gsap.to(sunLight, { intensity: isNight ? 0.1 : 1.2, duration: 2 });
+            document.getElementById('body').classList.toggle('light-mode');
+            document.getElementById('dayBtn').innerText = isNight ? "🌙 Night" : "☀️ Day";
+            setSeason(currentSeason);
+        }
+
+        function toggleRain() {
+            isRaining = !isRaining;
+            rainParticles.visible = isRaining;
+            const btn = document.getElementById('rainBtn');
+            btn.classList.toggle('chip-active');
+            btn.innerText = isRaining ? "🌧️ Raining" : "🌧️ Rain";
+        }
+
+        document.getElementById('treeSlider').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const current = treeGroup.children.length;
+            
+            // UI Updates
+            document.getElementById('treeCountLabel').innerText = val;
+            
+            // Eco Calculations
+            document.getElementById('co2Val').innerText = (val * 22) + "kg";
+            document.getElementById('o2Val').innerText = (val * 118) + "kg";
+            document.getElementById('hVal').innerText = (val * 4.5).toFixed(1) + "kg";
+            document.getElementById('h2oVal').innerText = (val * 150) + "L";
+            
+            // Atmospheric Health Logic
+            const health = Math.min(100, 20 + (val * 1.5));
+            document.getElementById('healthVal').innerText = Math.floor(health) + "%";
+            
+            if(val > current) {
+                for(let i=0; i<(val-current); i++) {
+                    const t = createRealTree();
+                    const b = landGroup.children[Math.floor(Math.random()*landGroup.children.length)];
+                    t.position.set(b.position.x, b.userData.surfaceY, b.position.z);
+                    treeGroup.add(t);
+                    gsap.to(t.scale, { x:1, y:1, z:1, duration: 1, ease: "back.out(1.7)", delay: i*0.05 });
+                }
+            } else {
+                for(let i=0; i<(current-val); i++) {
+                    const t = treeGroup.children[treeGroup.children.length-1];
+                    gsap.to(t.scale, { x:0, y:0, z:0, duration: 0.4, onComplete: () => treeGroup.remove(t) });
+                }
+            }
+        });
+
+        /** ANIMATION **/
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = Date.now() * 0.001;
+            controls.update();
+
+            // Rain Physics
+            if(isRaining) {
+                const p = rainParticles.geometry.attributes.position.array;
+                for(let i=1; i<p.length; i+=3) {
+                    p[i] -= currentSeason === 'winter' ? 0.04 : 0.22;
+                    if(p[i] < -1) p[i] = 10;
+                }
+                rainParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // Sway & Life
+            treeGroup.children.forEach(t => {
+                t.rotation.z = Math.sin(time + t.userData.windPhase) * 0.03;
+            });
+
+            birdGroup.children.forEach((b, i) => {
+                b.position.y += Math.sin(time * 2 + i) * 0.01;
+                b.rotation.y = time * 0.5 + i;
+                b.children[0].rotation.y = Math.sin(time * 15) * 0.6;
+            });
+
+            animalGroup.children.forEach(a => {
+                if(Math.random() > 0.992) {
+                    const b = landGroup.children[Math.floor(Math.random()*landGroup.children.length)];
+                    a.userData.targetPos.set(b.position.x, b.userData.surfaceY + 0.1, b.position.z);
+                }
+                a.position.lerp(a.userData.targetPos, 0.015);
+                a.lookAt(a.userData.targetPos.x, a.position.y, a.userData.targetPos.z);
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        /** INIT **/
+        camera.position.set(14, 14, 14);
+        createTerrain();
+        for(let i=0; i<8; i++) createBird();
+        for(let i=0; i<3; i++) createAnimal();
+        toggleDayNight();
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
